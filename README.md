@@ -145,16 +145,68 @@ API permission / deadline / isolation / lifecycle / seed idempotency.
 - Put TLS termination in front of the container; the app itself listens on plain HTTP.
 - Do not expose Postgres ports publicly; the compose file publishes 5432/5433 for local dogfooding.
 
-## Layout
+## Repository map
 
 ```
-src/shared   Zod schemas + shared types
-src/server   Express 5 + Prisma + seed
-src/web      React 18 + Vite + TanStack Query
-tests/       Vitest unit + API suites
-fixtures.json
-docs/SPEC.md
+.
+├── .dogfood.toml           DOGFOOD checker config: claimed tiers, demo auth headers, routes
+├── acceptance-report.txt   Output of run.py on the final build
+├── docker-compose.yml      One command to a seeded portal (db + app)
+├── Dockerfile              Multi-stage build: shared → server → web → runtime
+├── fixtures.json           Official DOGFOOD fixture data, loaded by the seed on boot
+├── run.py                  Official DOGFOOD acceptance checker (unmodified)
+├── README.md               This file
+├── ARCHITECTURE.md         System design and rationale
+├── DATA-MODEL.md           Schema, fixture mapping, import and export paths
+├── JUDGING.md              Assignment, scoring math, normalization, isolation, signed records
+├── LICENSE                 MIT
+│
+├── docs/
+│   ├── API.md              REST API guide: auth (sessions, API keys), errors, webhooks
+│   ├── THREAT-MODEL.md     Sybil votes, ballot stuffing, collusion, SSRF, import abuse, …
+│   └── SPEC.md             Original build plan written before kickoff (see Build timeline)
+│
+├── src/
+│   ├── shared/src/schemas/     Zod request/response schemas used by server and web
+│   ├── server/
+│   │   ├── prisma/             schema.prisma + migrations
+│   │   └── src/
+│   │       ├── app.ts          Express app: security headers, routers, SPA fallback
+│   │       ├── lib/            prisma, clock, tokens, audit log, CSV, errors, API-key scope
+│   │       ├── middleware/     authenticate, authorize (roles), validate, error handler
+│   │       ├── seed/           Idempotent, create-only seed (fixtures + demo accounts/tokens)
+│   │       └── modules/        One folder per feature (routes + services):
+│   │             auth, admin, events, teams, projects        → Tier 1
+│   │             judging (rubric, assignment, scoring,
+│   │               normalization, results, dashboard, CSV)    → Tier 2
+│   │             community (voting, ballots, comments, abuse) → Tier 3
+│   │             apikeys, openapi, webhooks, records,
+│   │               transfer (import/export), embed           → Tier 4
+│   └── web/src/
+│       ├── api/                The only fetch client + TanStack Query hooks
+│       ├── auth/               Session context and role guards
+│       ├── components/         Shared UI components and layout
+│       └── pages/              public/ · participant/ · judge/ · organizer/ (tabs) · admin/
+│
+├── tests/
+│   ├── unit/                   Pure functions: normalization, assignment, ballot, abuse, SSRF, …
+│   ├── api/                    HTTP tests incl. permission matrix, judge isolation, deadline,
+│   │                           full lifecycles for T1–T4
+│   └── helpers/                Test app, DB reset, fixed clock, seeded scenarios
+│
+└── tools/
+    └── verify-record.mjs       Offline verifier for signed judge records (Node stdlib only)
 ```
 
-See [ARCHITECTURE.md](ARCHITECTURE.md), [DATA-MODEL.md](DATA-MODEL.md), and
-[JUDGING.md](JUDGING.md) for deeper detail.
+### Where to find a feature
+
+| Looking for | Go to |
+|---|---|
+| Login, sessions, roles | `src/server/src/modules/auth`, `middleware/authenticate.ts`, `middleware/authorize.ts` |
+| Deadline rules | `src/server/src/modules/events/phase.ts` |
+| Judge isolation (peer scores → 403) | `src/server/src/modules/judging` + `tests/api/judge-isolation.test.ts` |
+| Normalization math | `src/server/src/modules/judging/normalization.ts` + [JUDGING.md](JUDGING.md) |
+| Community voting and hidden results | `src/server/src/modules/community` |
+| Signed records and certificates | `src/server/src/modules/records` + `tools/verify-record.mjs` |
+| Import / export | `src/server/src/modules/transfer` + [DATA-MODEL.md](DATA-MODEL.md) |
+| Every route × role check | `tests/api/permission-matrix.test.ts` |
