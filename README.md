@@ -1,6 +1,6 @@
 # DOGFOOD Portal
 
-[Demo video](VIDEO_URL_HERE)
+[Demo video](https://youtu.be/GHFq7yhqiWE)
 Self-hosted hackathon submission and judging portal. Participants form teams and submit
 projects; organizers configure events, rubrics, and judges; judges score assigned projects
 with weighted criteria and cross-judge normalization. Everything runs offline after images
