@@ -19,7 +19,7 @@ export function HomePage() {
 
         {/* Hero Title */}
         <h1 className="text-6xl sm:text-7xl md:text-8xl font-extrabold text-white tracking-tight font-display uppercase">
-          CODE<span className="text-df-cyan">CLASH</span>
+          PRISM
         </h1>
         
         {/* Hero Tagline */}
@@ -47,13 +47,6 @@ export function HomePage() {
               Explore Gallery
             </Link>
           </div>
-
-          <a 
-            href="mailto:hello@codecolosseum.com"
-            className="mt-2 text-df-dim hover:text-df-cyan font-mono text-xs uppercase tracking-widest transition-colors hover:underline underline-offset-4 inline-flex items-center gap-1"
-          >
-            Talk To Us &rarr;
-          </a>
         </div>
 
         {/* Platform Highlights Grid */}
