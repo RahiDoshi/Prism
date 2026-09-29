@@ -11,6 +11,4 @@ npm-debug.log
 .env.*
 coverage
 tests
-.cursor
-PHASES.md
 src/**/dist
