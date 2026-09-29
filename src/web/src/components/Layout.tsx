@@ -22,11 +22,9 @@ export function Layout() {
           {/* Left Logo with cyan icon badge */}
           <div className="flex items-center">
             <Link to="/" className="text-lg font-bold text-white tracking-wider flex items-center gap-2.5 group">
-              <span className="flex h-7 w-7 items-center justify-center rounded-md bg-df-cyan/10 text-df-cyan border border-df-cyan/30 group-hover:border-df-cyan transition-colors text-xs font-mono">
-                ⚡
-              </span>
-              <span className="font-display uppercase tracking-widest text-white group-hover:text-df-cyan transition-colors">
-                CODECLASH
+              <img src="/logo.png" alt="Prism logo" className="h-12 w-12 object-contain rounded-md" />
+              <span className="font-display uppercase tracking-widest text-white">
+                PRISM
               </span>
             </Link>
           </div>
