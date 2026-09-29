@@ -984,10 +984,10 @@ describe("api/permission-matrix", () => {
       for (const actor of ACTORS) {
         it(`${actor} → ${matrixCase.expected[actor]}`, async () => {
           const token = tokenFor(scenario, actor);
-          const path = matrixCase.path(scenario);
-          const req = request(app)[matrixCase.method](path).set(authHeader(token));
+          const targetPath = matrixCase.path(scenario);
+          let req = request(app)[matrixCase.method](targetPath).set(authHeader(token));
           if (matrixCase.body) {
-            void req.send(matrixCase.body(scenario));
+            req = req.send(matrixCase.body(scenario));
           }
           const response = await req;
           expect(response.status).toBe(matrixCase.expected[actor]);

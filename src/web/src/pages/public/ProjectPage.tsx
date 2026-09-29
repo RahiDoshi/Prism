@@ -140,47 +140,68 @@ export function ProjectPage() {
   if (!project) return <EmptyState title="Project not found" />;
 
   return (
-    <div className="space-y-4">
-      <div>
-        <p className="text-sm text-df-dim">
-          <Link to={`/events/${project.eventId}`} className="text-df-pink hover:text-df-cyan transition-colors font-mono">
-            ← Back to event
-          </Link>
-        </p>
-        <h1 className="mt-2 text-2xl font-semibold text-df-text">{project.title}</h1>
-        <p className="mt-1 text-sm text-df-dim">
-          {project.teamName} · {project.trackName ?? "No track"} · {project.status}
+    <div className="space-y-6">
+      <div className="border-b border-df-border/80 pb-4 space-y-2">
+        <Link to={`/events/${project.eventId}`} className="inline-flex items-center gap-1.5 text-xs text-df-pink hover:text-df-cyan transition-colors font-mono font-bold uppercase tracking-wider">
+          &larr; Back to Event
+        </Link>
+        <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
+          <h1 className="text-3xl font-bold text-white font-display">{project.title}</h1>
+          <div className="flex items-center gap-2">
+            {project.trackName ? (
+              <span className="px-3 py-1 rounded-md text-xs font-mono font-bold uppercase tracking-wider bg-df-cyan/10 text-df-cyan border border-df-cyan/30">
+                {project.trackName}
+              </span>
+            ) : null}
+            <span className={`px-3 py-1 rounded-md text-xs font-mono font-bold uppercase tracking-wider ${project.status === 'SUBMITTED' ? 'bg-emerald-950/90 text-emerald-300 border border-emerald-500/50' : 'bg-amber-950/90 text-amber-300 border border-amber-500/50'}`}>
+              {project.status}
+            </span>
+          </div>
+        </div>
+        <p className="text-sm font-mono text-df-dim flex items-center gap-2">
+          <span>Team: <strong className="text-white font-semibold">{project.teamName}</strong></span>
         </p>
       </div>
-      <Card title="Summary">
-        <p className="whitespace-pre-wrap text-df-text">{project.summary || "—"}</p>
+
+      <Card title="Project Summary">
+        <p className="whitespace-pre-wrap text-df-text/90 leading-relaxed font-sans">{project.summary || "No summary provided."}</p>
       </Card>
-      <Card title="Links">
-        <ul className="space-y-2 text-sm">
-          <li>
-            Repo:{" "}
-            {isSafeUrl(project.repoUrl) ? (
-              <a className="text-df-pink hover:text-df-cyan transition-colors font-mono" href={project.repoUrl} target="_blank" rel="noopener noreferrer">
-                {project.repoUrl}
-              </a>
-            ) : (
-              "—"
-            )}
-          </li>
-          <li>
-            Demo:{" "}
-            {isSafeUrl(project.demoUrl) ? (
-              <a className="text-df-pink hover:text-df-cyan transition-colors font-mono" href={project.demoUrl} target="_blank" rel="noopener noreferrer">
-                {project.demoUrl}
-              </a>
-            ) : (
-              "—"
-            )}
-          </li>
-          <li>
-            Submitted: <DateTime value={project.submittedAt} />
-          </li>
-        </ul>
+
+      <Card title="Project Submissions & Links">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div className="p-3.5 rounded-lg bg-df-bg/80 border border-df-border flex flex-col justify-between">
+            <span className="text-xs font-mono font-bold text-df-dim uppercase tracking-wider">Repository</span>
+            <div className="mt-2 text-sm font-mono truncate">
+              {isSafeUrl(project.repoUrl) ? (
+                <a className="text-df-pink hover:text-df-cyan transition-colors font-semibold" href={project.repoUrl} target="_blank" rel="noopener noreferrer">
+                  View Source Code &rarr;
+                </a>
+              ) : (
+                <span className="text-df-dim">—</span>
+              )}
+            </div>
+          </div>
+
+          <div className="p-3.5 rounded-lg bg-df-bg/80 border border-df-border flex flex-col justify-between">
+            <span className="text-xs font-mono font-bold text-df-dim uppercase tracking-wider">Demo / Build</span>
+            <div className="mt-2 text-sm font-mono truncate">
+              {isSafeUrl(project.demoUrl) ? (
+                <a className="text-df-pink hover:text-df-cyan transition-colors font-semibold" href={project.demoUrl} target="_blank" rel="noopener noreferrer">
+                  Live Demo Link &rarr;
+                </a>
+              ) : (
+                <span className="text-df-dim">—</span>
+              )}
+            </div>
+          </div>
+
+          <div className="p-3.5 rounded-lg bg-df-bg/80 border border-df-border flex flex-col justify-between">
+            <span className="text-xs font-mono font-bold text-df-dim uppercase tracking-wider">Submitted Date</span>
+            <div className="mt-2 text-sm font-mono font-semibold text-white">
+              <DateTime value={project.submittedAt} />
+            </div>
+          </div>
+        </div>
       </Card>
       {project.status === "SUBMITTED" ? <CommentsSection projectId={project.id} /> : null}
     </div>

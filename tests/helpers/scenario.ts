@@ -7,6 +7,7 @@ import {
 import { prisma } from "../../src/server/src/lib/prisma.js";
 import { setFixedClock } from "./clock.js";
 import { createUser, grantEventRole, type TestUser } from "./tokens.js";
+import { hashToken } from "../../src/server/src/lib/tokens.js";
 
 export type Scenario = {
   now: Date;
@@ -198,13 +199,17 @@ export async function seedPermissionScenario(suffix: string = ""): Promise<Scena
     },
   });
 
+  const uniqueId = suffix || Math.random().toString(36).slice(2);
+  const scopedKey = `dfk_scop_${uniqueId}`;
+  const unscopedKey = `dfk_unsc_${uniqueId}`;
+
   const scopedApiKeyRow = await prisma.apiKey.create({
     data: {
       eventId: event.id,
       ownerId: organizer.id,
       name: "Scoped Key",
-      prefix: "dfk_scop",
-      keyHash: "948dab4d19bfb492b1103be4dc4b9549aafe5593bdf88c6f5f9da0be794a0902",
+      prefix: scopedKey.slice(0, 8),
+      keyHash: hashToken(scopedKey),
       scopes: ["read", "write"],
     }
   });
@@ -213,8 +218,8 @@ export async function seedPermissionScenario(suffix: string = ""): Promise<Scena
     data: {
       ownerId: organizer.id,
       name: "Unscoped Key",
-      prefix: "dfk_unsc",
-      keyHash: "8cfed89045eb069f4b63790482d4b683bc287f29da231a45e95840a0d4696e63",
+      prefix: unscopedKey.slice(0, 8),
+      keyHash: hashToken(unscopedKey),
       scopes: ["read", "write"],
     }
   });
@@ -239,7 +244,7 @@ export async function seedPermissionScenario(suffix: string = ""): Promise<Scena
     judgeA,
     judgeB,
     outsider,
-    scopedKey: "dfk_scop_dummy",
-    unscopedKey: "dfk_unsc_dummy",
+    scopedKey,
+    unscopedKey,
   };
 }

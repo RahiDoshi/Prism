@@ -21,10 +21,14 @@ export function Countdown({ to, label }: { to: string; label?: string }) {
     return () => window.clearInterval(id);
   }, []);
 
+  const remainingText = formatRemaining(target - now);
+  const isClosed = remainingText === "Closed";
+
   return (
-    <p className="text-sm text-df-text">
-      {label ? <span className="font-medium">{label}: </span> : null}
-      <span>{formatRemaining(target - now)}</span>
-    </p>
+    <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-df-bg/80 border border-df-cyan/30 text-sm font-mono">
+      <span className={`w-2 h-2 rounded-full ${isClosed ? "bg-rose-500" : "bg-df-cyan"}`} />
+      {label ? <span className="font-semibold text-df-dim uppercase text-xs tracking-wider">{label}:</span> : null}
+      <span className={`font-bold ${isClosed ? "text-rose-400" : "text-df-cyan"}`}>{remainingText}</span>
+    </div>
   );
 }
